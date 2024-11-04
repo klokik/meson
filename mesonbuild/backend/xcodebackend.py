@@ -1770,7 +1770,11 @@ class XCodeBackend(backends.Backend):
                     i = os.path.normpath(i)
                     unquoted_headers.append(i)
             for i in unquoted_headers:
-                header_arr.add_item(f'"{i}"')
+                if ' ' in i:
+                    # Make sure Xcode will not split single path into separate entries, escaping just space won't help
+                    header_arr.add_item(f'"\\\"{i}\\\""')
+                else:
+                    header_arr.add_item(f'"{i}"')
             settings_dict.add_item('HEADER_SEARCH_PATHS', header_arr)
             settings_dict.add_item('INSTALL_PATH', install_path)
             settings_dict.add_item('LIBRARY_SEARCH_PATHS', '')
